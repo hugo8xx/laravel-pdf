@@ -26,7 +26,18 @@ class PdfWrapper {
 	 * @return static
 	 */
 	public function loadHTML($string, $mode = 0) {
-		$this->mpdf->WriteHTML((string) $string, $mode);
+		if(is_array($string)) {
+			foreach($string as $s) {
+				if($s == '-') {
+					$this->mpdf->AddPage();
+				}else {
+					$this->mpdf->WriteHTML((string) $s, $mode);	
+				}	
+			}
+		} else {
+			$this->mpdf->WriteHTML((string) $string, $mode);
+		}
+		
 		$this->html = null;
 		$this->file = null;
 		return $this;
