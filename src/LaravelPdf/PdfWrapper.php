@@ -15,8 +15,30 @@ class PdfWrapper {
 	protected $options;
 
 	public function __construct($mpdf) {
-		$this->mpdf = $mpdf;
+		//$this->mpdf = $mpdf;
 		$this->options = array();
+
+		$this->mpdf = new \mPDF(
+			Config::get('pdf.mode'),              // mode - default ''
+			Config::get('pdf.format'),            // format - A4, for example, default ''
+			Config::get('pdf.default_font_size'), // font size - default 0
+			Config::get('pdf.default_font'),      // default font family
+			Config::get('pdf.margin_left'),       // margin_left
+			Config::get('pdf.margin_right'),      // margin right
+			Config::get('pdf.margin_top'),        // margin top
+			Config::get('pdf.margin_bottom'),     // margin bottom
+			Config::get('pdf.margin_header'),     // margin header
+			Config::get('pdf.margin_footer'),     // margin footer
+			Config::get('pdf.orientation')        // L - landscape, P - portrait
+		);
+
+		$this->mpdf->SetTitle(Config::get('pdf.title'));
+		$this->mpdf->SetAuthor(Config::get('pdf.author'));
+		$this->mpdf->SetWatermarkText(Config::get('pdf.watermark'));
+		$this->mpdf->SetDisplayMode(Config::get('pdf.display_mode'));
+		$this->mpdf->showWatermarkText = Config::get('pdf.show_watermark');
+		$this->mpdf->watermark_font = Config::get('pdf.watermark_font');
+		$this->mpdf->watermarkTextAlpha = Config::get('pdf.watermark_text_alpha');
 	}
 
 	/**
@@ -75,7 +97,6 @@ class PdfWrapper {
 	 * @return string The rendered PDF as string
 	 */
 	public function output() {
-
 		if($this->html) {
 			$this->mpdf->WriteHTML($this->html);
 		} elseif($this->file) {
@@ -92,33 +113,6 @@ class PdfWrapper {
 	 * @return static
 	 */
 	public function save($filename) {
-		if($this->mpdf)
-		{
-			$this->mpdf = new \mPDF(
-				Config::get('pdf.mode'),              // mode - default ''
-				Config::get('pdf.format'),            // format - A4, for example, default ''
-				Config::get('pdf.default_font_size'), // font size - default 0
-				Config::get('pdf.default_font'),      // default font family
-				Config::get('pdf.margin_left'),       // margin_left
-				Config::get('pdf.margin_right'),      // margin right
-				Config::get('pdf.margin_top'),        // margin top
-				Config::get('pdf.margin_bottom'),     // margin bottom
-				Config::get('pdf.margin_header'),     // margin header
-				Config::get('pdf.margin_footer'),     // margin footer
-				Config::get('pdf.orientation')        // L - landscape, P - portrait
-			);
-
-			$this->mpdf->SetTitle(Config::get('pdf.title'));
-			$this->mpdf->SetAuthor(Config::get('pdf.author'));
-			$this->mpdf->SetWatermarkText(Config::get('pdf.watermark'));
-			$this->mpdf->SetDisplayMode(Config::get('pdf.display_mode'));
-			$this->mpdf->showWatermarkText = Config::get('pdf.show_watermark');
-			$this->mpdf->watermark_font = Config::get('pdf.watermark_font');
-			$this->mpdf->watermarkTextAlpha = Config::get('pdf.watermark_text_alpha');
-
-		}
-
-
 		if($this->html) {
 			$this->mpdf->WriteHTML($this->html);
 		} elseif($this->file) {
@@ -135,7 +129,6 @@ class PdfWrapper {
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function download($filename = 'document.pdf') {
-
 		if ($this->html) {
 			$this->mpdf->WriteHTML($this->html);
 		} elseif ($this->file) {
